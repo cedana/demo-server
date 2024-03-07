@@ -22,7 +22,6 @@
   var serializeAddon = new SerializeAddon.SerializeAddon();
   terminal.loadAddon(serializeAddon);
   ws.onclose = function(event) {
-    console.log(event);
     terminal.write('\r\n\nconnection has been terminated from the server-side (hit refresh to restart)\n')
   };
   ws.onopen = function() {
@@ -35,11 +34,7 @@
       var cols = event.cols;
       var size = JSON.stringify({cols: cols, rows: rows + 1});
       var send = new TextEncoder().encode("\x01" + size);
-      console.log('resizing to', size);
       ws.send(send);
-    });
-    terminal.onTitleChange(function(event) {
-      console.log(event);
     });
     window.onresize = function() {
       fitAddon.fit();

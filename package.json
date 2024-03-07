@@ -1,13 +1,10 @@
 {
   "name": "cedana-shell",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "go run ./cmd/cedana-shell"
+    "start": "go run ./cmd"
   },
-  "author": "Joseph Matthias Goh (@zephinzer)",
-  "license": "MIT",
   "dependencies": {
     "xterm": "^4.11.0",
     "xterm-addon-attach": "^0.6.0",

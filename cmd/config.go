@@ -20,9 +20,6 @@ var conf = config.Map{
 	"max-buffer-size-bytes": &config.Int{
 		Default: 512,
 	},
-	"log-level": &config.String{
-		Default: "debug",
-	},
 	"path-xtermjs": &config.String{
 		Default: "/xterm.js",
 	},
