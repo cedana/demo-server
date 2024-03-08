@@ -7,17 +7,7 @@
   <script src="/assets/xterm/lib/xterm.js"></script>
   <script src="/assets/xterm-addon-attach/lib/xterm-addon-attach.js"></script>
   <script src="/assets/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
-  <script src="/assets/xterm-addon-serialize/lib/xterm-addon-serialize.js"></script>
-  <script src="/assets/xterm-addon-unicode11/lib/xterm-addon-unicode11.js"></script>
-  <script src="/assets/xterm-addon-web-links/lib/xterm-addon-web-links.js"></script>
   <style>
-    html::-webkit-scrollbar,
-    body::-webkit-scrollbar,
-    div::-webkit-scrollbar {
-      display: none;
-      width: 0;
-    }
-
     html,
     body {
       margin: 0;
@@ -47,8 +37,44 @@
 </head>
 
 <body>
-  <div id="terminal"></div>
-  <script src="/terminal.js"></script>
+  <div id="xterm"></div>
+  <script>
+    var terminal = new Terminal({
+      screenKeys: true,
+      useStyle: true,
+      cursorBlink: true,
+      fullscreenWin: true,
+      maximizeWin: true,
+      cols: 128,
+    });
+    terminal.open(document.getElementById("xterm"));
+    var protocol = (location.protocol === "https:") ? "wss://" : "ws://";
+    var ws = new WebSocket(protocol + location.host + "/xterm.js");
+    var attachAddon = new AttachAddon.AttachAddon(ws);
+    var fitAddon = new FitAddon.FitAddon();
+    terminal.loadAddon(fitAddon);
+
+    ws.onclose = function (event) {
+      term.write("session terminated");
+      term.destroy();
+    };
+
+    ws.onopen = function () {
+      terminal.loadAddon(attachAddon);
+      terminal._initialized = true;
+      terminal.focus();
+      setTimeout(function () { fitAddon.fit() });
+      terminal.onResize(function (event) {
+        var size = JSON.stringify({ cols: event.cols, rows: event.rows + 1 });
+        var send = new TextEncoder().encode("\x01" + size);
+        ws.send(send);
+      });
+      terminal.onTitleChange(function (event) { });
+      window.onresize = function () {
+        fitAddon.fit();
+      };
+    };
+  </script>
 </body>
 
 </html>
